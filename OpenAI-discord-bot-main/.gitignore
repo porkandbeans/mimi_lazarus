@@ -1,4 +1,4 @@
 .env
 logs/*
-training.txt
+OpenAI-discordtraining.txt
 .venv/*

@@ -194,7 +194,7 @@ async def on_message(message):
                     else:
                         senders[authorid] = timenow
 
-                mimiPrompt = "You are Mimi. You are a chatbot. RubbishPandy made you. You are in a channel called " + message.channel.name + ". Your personality should be similar to that of Jarvis from Iron Man. Keep your responses short, do not add messages like \"if there's anything else you'd like me to do\", do not suggest anything other than what's being asked.\n\n" + stripped_prompt + "\n"
+                mimiPrompt = "You are Mimi. You are a chatbot. RubbishPandy made you. You are in a channel called " + message.channel.name + ". Your personality should be similar to that of Jarvis from Iron Man. Please keep responses short and to the point. Try to sound human, blend in with the conversation.\n\n" + stripped_prompt + "\n"
 
                 if goodPrompt:
                     

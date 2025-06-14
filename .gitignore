@@ -1,0 +1,9 @@
+# Exclude ENV
+.env
+
+# exclude chatlogs
+logs/
+
+training.txt
+OpenAI-discord-bot-main/training.txt
+training.txt

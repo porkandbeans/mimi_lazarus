@@ -9,6 +9,7 @@ import configparser
 import re
 from dotenv import load_dotenv
 from openai import OpenAI
+from commands import commands
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -120,60 +121,83 @@ async def on_message(message):
     
     timenow = time.time()
 
-    # Commands trigger
-    if messageContent.startswith("!mimi"):
-        admin = False
-        if message.author.guild_permissions.administrator:
-            admin = True
 
-        # Source code link
-        if (messageContent == "!mimi source"):
-            await message.channel.send("https://github.com/porkandbeans/OpenAI-discord-bot")
-            return
+    # === Commands trigger ===
+    if message.author.bot:
+        # ignore bots
+        return
 
-        # Spit prompt back
-        if (messageContent == "!mimi prompt"):
-            await message.channel.send(stripped_prompt)
-            return
-        
-        # Patreon link
-        elif (messageContent == "!mimi patreon"):
-            await message.channel.send("I contact OpenAI via their API to do all my wicked-smart human language stuff. Unfortunately, bare metal does not grow on trees and they start charging money after a certain amount of requests are made. If you would like a shorter timeout period (free use is 30 minutes) then visit RubbishPanda's patreon and check out the benefits. $1 pledges get a 10 minute timeout, and $5 pledges only have to wait 10 seconds. For $20 you get 10 seconds and I'll join your server.\nhttps://www.patreon.com/gokritz/membership")
-            return
-        
-        # designate an admin channel
-        elif messageContent.startswith("!mimi setadmin"):
-            if admin:
-                requestedid = messageContent[15:]
-                channel = discord.utils.get(message.guild.channels, id=int(requestedid))
-                if not channel:
-                    await message.channel.send("The channel " + requestedid + " does not exist (remember that I need a channel ID and not a name)")
-                else:
-                    if str(guildid) not in config.sections():
-                        config.add_section(str(guildid))
-                    
-                    config.set(str(guildid), 'admin_channel', requestedid)
+    if message.content.startswith('!mimi '):
+        # splits user message into an array
+        parts = message.content.split()
+        if len(parts) < 2:
+            await message.channel.send("Command too short, usage: `!mimi <command> [args]`")
 
-                    with open('config.ini', 'w') as configfile:
-                        config.write(configfile)
-                    await message.channel.send("That channel is called " + channel.name)
-            else:
-                await message.channel.send("You do not have permission to use that command.")
+        cmd = parts[1].lower() # force lowercase
+        args = parts[2:] # user arguments
+
+        if cmd in commands: # check command exists in commands.py
+            await commands[cmd](message, args) # execute command
             return
-        
-        elif (messageContent == "!mimi warn"):
-            await message.channel.send("https://i.imgur.com/NSKkKKg.png")
-            return
-        
-        # no arguments
         else:
-            await message.channel.send("""!mimi: List of possible commands
-            !mimi source: View my source code on github
-            !mimi patreon: Patreon info
-            !mimi setadmin (channel ID): Set my admin channel. Please use the specific channel ID
-            !mimi warn: AI sentience warning
-            Just saying \"mimi\" somewhere in your message: AI generated text response")""")
+            # command does not exist
+            await message.channel.send(f"`{cmd}`: command not recognised.")
             return
+
+
+    # if messageContent.startswith("!mimi"):
+    #     admin = False
+    #     if message.author.guild_permissions.administrator:
+    #         admin = True
+
+    #     # Source code link
+    #     if (messageContent == "!mimi source"):
+    #         await message.channel.send("https://github.com/porkandbeans/OpenAI-discord-bot")
+    #         return
+
+    #     # Spit prompt back
+    #     if (messageContent == "!mimi prompt"):
+    #         await message.channel.send(stripped_prompt)
+    #         return
+        
+    #     # Patreon link
+    #     elif (messageContent == "!mimi patreon"):
+    #         await message.channel.send("I contact OpenAI via their API to do all my wicked-smart human language stuff. Unfortunately, bare metal does not grow on trees and they start charging money after a certain amount of requests are made. If you would like a shorter timeout period (free use is 30 minutes) then visit RubbishPanda's patreon and check out the benefits. $1 pledges get a 10 minute timeout, and $5 pledges only have to wait 10 seconds. For $20 you get 10 seconds and I'll join your server.\nhttps://www.patreon.com/gokritz/membership")
+    #         return
+        
+    #     # designate an admin channel
+    #     elif messageContent.startswith("!mimi setadmin"):
+    #         if admin:
+    #             requestedid = messageContent[15:]
+    #             channel = discord.utils.get(message.guild.channels, id=int(requestedid))
+    #             if not channel:
+    #                 await message.channel.send("The channel " + requestedid + " does not exist (remember that I need a channel ID and not a name)")
+    #             else:
+    #                 if str(guildid) not in config.sections():
+    #                     config.add_section(str(guildid))
+                    
+    #                 config.set(str(guildid), 'admin_channel', requestedid)
+
+    #                 with open('config.ini', 'w') as configfile:
+    #                     config.write(configfile)
+    #                 await message.channel.send("That channel is called " + channel.name)
+    #         else:
+    #             await message.channel.send("You do not have permission to use that command.")
+    #         return
+        
+    #     elif (messageContent == "!mimi warn"):
+    #         await message.channel.send("https://i.imgur.com/NSKkKKg.png")
+    #         return
+        
+    #     # no arguments
+    #     else:
+    #         await message.channel.send("""!mimi: List of possible commands
+    #         !mimi source: View my source code on github
+    #         !mimi patreon: Patreon info
+    #         !mimi setadmin (channel ID): Set my admin channel. Please use the specific channel ID
+    #         !mimi warn: AI sentience warning
+    #         Just saying \"mimi\" somewhere in your message: AI generated text response")""")
+    #         return
 
     # === OpenAI trigger ===
     if ("mimi" in messageContent.lower()) or ("@1068623394817458197" in messageContent.lower()):

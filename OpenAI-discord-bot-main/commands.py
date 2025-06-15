@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # client declaration for image generation
-client = Client("deepseek-ai/Janus-Pro-7B", hf_token=os.getenv('GRADIO_TOKEN'))
+# client = Client("deepseek-ai/Janus-Pro-7B", hf_token=os.getenv('GRADIO_TOKEN'))
+client = Client("deepseek-ai/Janus-Pro-7B")
 
 async def test_command(message, args):
     await message.channel.send(f"Command receieved, arguments: {args}")

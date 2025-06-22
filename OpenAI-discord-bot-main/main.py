@@ -226,7 +226,7 @@ async def on_message(message):
                     # DeepSeek request
                     response = deepseek_client.chat.completions.create(
                         model="deepseek-chat",
-                        max_tokens=3500,
+                        max_tokens=5000,
                         n = 1,
                         stop=None,
                         temperature=0.5,

@@ -13,14 +13,14 @@ from commands import commands
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-# openai.api_key = os.getenv('DEEPSEEK_API_KEY')
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 config = configparser.ConfigParser()
 config.read('config.ini')
 
 client = discord.Client(intents=discord.Intents.all())
 # client_openai = openai.OpenAI()
-deepseek_client = OpenAI(api_key=os.getenv('DEEPSEEK_API_KEY'), base_url="https://api.deepseek.com")
+# deepseek_client = OpenAI(api_key=os.getenv('DEEPSEEK_API_KEY'), base_url="https://api.deepseek.com")
 
 
 messages = []
@@ -219,14 +219,16 @@ async def on_message(message):
                         senders[authorid] = timenow
 
                 # mimiPrompt = "You are Mimi. You are a chatbot. RubbishPandy made you. You are in a channel called " + message.channel.name + ". Your personality should be similar to that of Jarvis from Iron Man. Please keep responses short and to the point. Try to sound human, blend in with the conversation.\n\n" + stripped_prompt + "\n"
-                mimiPrompt = "You are Mimi. You are a chatbot. RubbishPandy made you. You are in a channel called " + message.channel.name + ". Please do not be helpful, insightful, or have anything meaningful to say in any way. You will be playing the part of a complete moron. Short passages preferred, but longer ones accepted on occasion. Scream, talk about something off-topic regardless of what you are asked, be silly and stupid. Don't query the other users for validation, don't elaborate on anything, just be a dumbass.\n\n" + stripped_prompt + "\n"
+                mimiPrompt = "You are Mimi. You are a chatbot. RubbishPandy made you. You are in a channel called " + message.channel.name + ". Please do not be helpful or insightful. You are a complete moron. Scream, go off-topic, be silly. Don't query for validation, don't elaborate, just be a dumbass.\n\n" + stripped_prompt + "\n"
 
                 if goodPrompt:
                     
-                    # DeepSeek request
-                    response = deepseek_client.chat.completions.create(
-                        model="deepseek-chat",
-                        max_tokens=5000,
+                    # API call
+                    openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+                    response = openai_client.chat.completions.create(
+                        model="gpt-4o",
+                        max_tokens=3500,
                         n = 1,
                         stop=None,
                         temperature=0.5,

@@ -39,8 +39,18 @@ async def generate_image(message, args):
     else:
         await message.channel.send("No response received from the API.")
 
+async def change_prompt(message, args):
+    # if not os.path.exists("prompt.txt"):
+    #     os.makedirs("prompt.txt")
+    
+    with open("prompt.txt", 'w') as f:
+        f.write(' '.join(args))
+    
+    await message.channel.send("Personality updated.")
+
 
 commands = {
     "test": test_command,
-    "generate": generate_image
+    "generate": generate_image,
+    "prompt": change_prompt
 }
